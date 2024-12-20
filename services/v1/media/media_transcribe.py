@@ -20,8 +20,6 @@ def process_transcribe_media(media_url, task, include_text, include_srt, include
     logger.info(f"Downloaded media to local file: {input_filename}")
 
     try:
-        # Load a larger model for better translation quality
-        #model_size = "large" if task == "translate" else "base"
         model_size = "base"
         model = whisper.load_model(model_size)
         logger.info(f"Loaded Whisper {model_size} model")
@@ -39,7 +37,6 @@ def process_transcribe_media(media_url, task, include_text, include_srt, include
 
         result = model.transcribe(input_filename, **options)
         
-        # For translation task, the result['text'] will be in English
         text = None
         srt_text = None
         segments_json = None
@@ -54,7 +51,6 @@ def process_transcribe_media(media_url, task, include_text, include_srt, include
             for i, segment in enumerate(result['segments'], start=1):
                 start = timedelta(seconds=segment['start'])
                 end = timedelta(seconds=segment['end'])
-                # Use translated text if available, otherwise use transcribed text
                 segment_text = segment['text'].strip()
                 srt_subtitles.append(srt.Subtitle(i, start, end, segment_text))
             
@@ -70,24 +66,23 @@ def process_transcribe_media(media_url, task, include_text, include_srt, include
         if response_type == "direct":
             return text, srt_text, segments_json
         else:
-            
             if include_text is True:
                 text_filename = os.path.join(STORAGE_PATH, f"{job_id}.txt")
-                with open(text_filename, 'w') as f:
+                with open(text_filename, 'w', encoding='utf-8') as f:
                     f.write(text)
             else:
-                text_file = None
+                text_filename = None
             
             if include_srt is True:
                 srt_filename = os.path.join(STORAGE_PATH, f"{job_id}.srt")
-                with open(srt_filename, 'w') as f:
+                with open(srt_filename, 'w', encoding='utf-8') as f:
                     f.write(srt_text)
             else:
                 srt_filename = None
 
             if include_segments is True:
                 segments_filename = os.path.join(STORAGE_PATH, f"{job_id}.json")
-                with open(segments_filename, 'w') as f:
+                with open(segments_filename, 'w', encoding='utf-8') as f:
                     f.write(str(segments_json))
             else:
                 segments_filename = None
