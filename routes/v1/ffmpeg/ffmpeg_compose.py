@@ -99,8 +99,20 @@ def ffmpeg_api(job_id, data):
     logger.info(f"Job {job_id}: Received flexible FFmpeg request")
 
     try:
-        output_filenames, metadata = process_ffmpeg_compose(data, job_id)
+        # Process FFmpeg compose and log the generated command
+        output_filenames, metadata, ffmpeg_command = process_ffmpeg_compose(data, job_id, return_command=True)
         
+        logger.debug(f"Job {job_id}: Generated FFmpeg Command: {' '.join(ffmpeg_command)}")
+
+        # Execute the FFmpeg command and log outputs
+        try:
+            result = subprocess.run(ffmpeg_command, capture_output=True, text=True)
+            logger.debug(f"Job {job_id}: FFmpeg Output: {result.stdout}")
+            logger.debug(f"Job {job_id}: FFmpeg Error: {result.stderr}")
+        except Exception as ffmpeg_error:
+            logger.error(f"Job {job_id}: Error executing FFmpeg command: {ffmpeg_error}")
+            raise ffmpeg_error
+
         # Upload output files to GCP and create result array
         output_urls = []
         for i, output_filename in enumerate(output_filenames):
