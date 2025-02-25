@@ -1,5 +1,6 @@
 import os
 import logging
+import subprocess
 from flask import Blueprint, request, jsonify
 from app_utils import *
 from services.v1.ffmpeg.ffmpeg_compose import process_ffmpeg_compose

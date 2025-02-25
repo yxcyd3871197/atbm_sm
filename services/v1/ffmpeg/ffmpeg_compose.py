@@ -76,7 +76,7 @@ def get_metadata(filename, metadata_requests, job_id):
 
     return metadata
 
-def process_ffmpeg_compose(data, job_id):
+def process_ffmpeg_compose(data, job_id, return_command=False):
     output_filenames = []
     
     # Build FFmpeg command
@@ -139,4 +139,7 @@ def process_ffmpeg_compose(data, job_id):
         for output_filename in output_filenames:
             metadata.append(get_metadata(output_filename, data["metadata"], job_id))
     
+    # Return the command if requested
+    if return_command:
+        return output_filenames, metadata, command
     return output_filenames, metadata
