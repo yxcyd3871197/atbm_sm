@@ -42,13 +42,11 @@ def send_webhook(webhook_url, data):
         # Remove query parameters from the URL
         clean_url = webhook_url.split('?')[0]
         
-        logger.info(f"Webhook would be sent to: {clean_url}")
-        logger.info(f"Webhook data: {json.dumps(data, indent=2)}")
-        
-        # In a real scenario, we would send the webhook
+        logger.info(f"Attempting to send webhook to {clean_url} with data: {data}")
         response = requests.post(clean_url, json=data)
         response.raise_for_status()
-    except Exception as e:
+        logger.info(f"Webhook sent: {data}")
+    except requests.RequestException as e:
         logger.error(f"Webhook failed: {e}")
 
 def process_ffmpeg_compose(data, job_id, return_command=False):
@@ -125,6 +123,7 @@ class TaskQueue:
                 job_id, data, webhook_url, queue_start_time = task
                 queue_time = time.time() - queue_start_time
                 run_start_time = time.time()
+                logger.info(f"Processing job {job_id} from queue")
                 
                 try:
                     # Process FFmpeg compose

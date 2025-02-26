@@ -18,7 +18,7 @@ data = {
             ]
         }
     ],
-    "webhook_url": "https://webhook.site/836aad1e-0ef6-4dca-8b23-9bafc9530431"
+    "webhook_url": "https://webhook.site/fe3792df-6985-472e-89cc-04df809c5d15"
 }
 
 response = requests.post(url, headers=headers, data=json.dumps(data))
