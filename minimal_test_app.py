@@ -5,6 +5,7 @@ import logging
 import uuid
 import threading
 import time
+import requests  # Import the requests module
 from flask import Flask, request, jsonify
 from urllib.parse import urlparse, parse_qs
 
@@ -45,8 +46,8 @@ def send_webhook(webhook_url, data):
         logger.info(f"Webhook data: {json.dumps(data, indent=2)}")
         
         # In a real scenario, we would send the webhook
-        # response = requests.post(clean_url, json=data)
-        # response.raise_for_status()
+        response = requests.post(clean_url, json=data)
+        response.raise_for_status()
     except Exception as e:
         logger.error(f"Webhook failed: {e}")
 
