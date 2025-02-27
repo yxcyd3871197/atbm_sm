@@ -40,7 +40,9 @@ def get_metadata(filename, metadata_requests, job_id):
             thumbnail_filename
         ]
         try:
-            subprocess.run(thumbnail_command, check=True, capture_output=True, text=True)
+            env = os.environ.copy()
+            env['PATH'] = '/usr/local/bin:' + env.get('PATH', '')
+            subprocess.run(thumbnail_command, check=True, capture_output=True, text=True, env=env)
             if os.path.exists(thumbnail_filename):
                 metadata['thumbnail'] = thumbnail_filename  # Return local path instead of URL
         except subprocess.CalledProcessError as e:
@@ -123,7 +125,9 @@ def process_ffmpeg_compose(data, job_id, return_command=False):
     
     # Execute FFmpeg command
     try:
-        subprocess.run(command, check=True, capture_output=True, text=True)
+        env = os.environ.copy()
+        env['PATH'] = '/usr/local/bin:' + env.get('PATH', '')
+        subprocess.run(command, check=True, capture_output=True, text=True, env=env)
     except subprocess.CalledProcessError as e:
         raise Exception(f"FFmpeg command failed: {e.stderr}")
     
