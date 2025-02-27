@@ -27,6 +27,14 @@ def create_app():
             run_time = time.time() - run_start_time
             total_time = time.time() - queue_start_time
 
+            webhook_url = data.get("webhook_url")
+            record_id = None
+            if webhook_url:
+                from urllib.parse import urlparse, parse_qs
+                parsed_url = urlparse(webhook_url)
+                query_params = parse_qs(parsed_url.query)
+                record_id = query_params.get('record_id', [None])[0]
+
             response_data = {
                 "endpoint": response[1],
                 "code": response[2],
@@ -40,7 +48,8 @@ def create_app():
                 "queue_time": round(queue_time, 3),
                 "total_time": round(total_time, 3),
                 "queue_length": task_queue.qsize(),
-                "build_number": BUILD_NUMBER  # Add build number to response
+                "build_number": BUILD_NUMBER,  # Add build number to response
+                "record_id": record_id
             }
 
             send_webhook(data.get("webhook_url"), response_data)
